@@ -14,10 +14,6 @@ import {
   Loader2,
   Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -111,240 +107,262 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-background font-sans">
-      {/* Left Side - Visuals */}
-      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-primary/5">
-        <div className="absolute inset-0 bg-grid-black/[0.02] bg-[size:20px_20px]" />
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+    <div className="min-h-screen flex flex-col md:flex-row bg-[#FFDE59] font-sans text-black selection:bg-black selection:text-white">
+      {/* Left Side - Visuals / Branding */}
+      <div className="hidden md:flex w-1/2 flex-col justify-between p-12 border-r-4 border-black bg-white relative overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, #000 1px, transparent 1px)",
+            backgroundSize: "30px 30px",
+          }}
+        ></div>
 
         <div className="relative z-10">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-xl font-bold tracking-tight mb-8"
-          >
-            <div className="bg-primary/10 p-2 rounded-lg">
-              <Ruler className="h-6 w-6 text-primary" />
+          <Link href="/" className="flex items-center gap-3 w-fit group">
+            <div className="bg-black text-white p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 transition-all">
+              <Ruler className="h-8 w-8" />
             </div>
-            MeasurePro
+            <span className="text-3xl font-black uppercase tracking-tight">
+              MeasurePro
+            </span>
           </Link>
 
-          <div className="space-y-6 max-w-lg">
-            <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-4">
-              Join thousands of builders.
+          <div className="mt-20 space-y-8">
+            <h1 className="text-6xl font-black uppercase leading-[0.9]">
+              Build
+              <br />
+              Faster.
+              <br />
+              Bill
+              <br />
+              Smarter.
             </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Create professional estimates, manage projects, and get paid
-              faster with the industry's most intuitive platform.
+            <p className="text-xl font-bold border-l-8 border-[#FFDE59] pl-6 max-w-md">
+              Join 500+ construction companies streamlining their workflow
+              today.
             </p>
           </div>
         </div>
 
-        <div className="relative z-10 grid gap-4">
-          <div className="flex items-center gap-4 p-4 rounded-xl bg-background/50 backdrop-blur border shadow-sm">
-            <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-              <Check className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="font-semibold">Free 14-day Pro Trial</p>
-              <p className="text-sm text-muted-foreground">
-                No credit card required
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 p-4 rounded-xl bg-background/50 backdrop-blur border shadow-sm">
-            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="font-semibold">AI Auto-Estimation</p>
-              <p className="text-sm text-muted-foreground">
-                Save 10+ hours per week
-              </p>
+        <div className="relative z-10 space-y-4">
+          {/* Testimonial Card */}
+          <div className="bg-white border-2 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <p className="text-lg font-bold italic mb-4">
+              "MeasurePro saved us 20 hours a week on billing alone. It's
+              strictly business."
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 bg-black text-white flex items-center justify-center font-black border-2 border-black">
+                RK
+              </div>
+              <div>
+                <div className="font-black uppercase">Rajesh Kumar</div>
+                <div className="text-sm font-bold text-gray-500">
+                  Project Manager
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex flex-col justify-center items-center p-6 lg:p-12 relative">
-        <div className="w-full max-w-md space-y-8">
-          <div className="lg:hidden flex items-center gap-2 font-bold text-xl mb-8">
-            <Ruler className="h-6 w-6 text-primary" /> MeasurePro
+      <div className="w-full md:w-1/2 flex flex-col justify-center px-8 sm:px-16 py-12 bg-[#FFDE59] relative">
+        <div className="w-full max-w-md mx-auto bg-white border-4 border-black p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative">
+          {/* Corner decorations */}
+          <div className="absolute -top-3 -left-3 h-6 w-6 bg-black"></div>
+          <div className="absolute -bottom-3 -right-3 h-6 w-6 bg-black"></div>
+
+          {/* Mobile Header */}
+          <div className="md:hidden mb-8 flex items-center justify-center">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="bg-black text-white p-1 border-2 border-black">
+                <Ruler className="h-6 w-6" />
+              </div>
+              <span className="text-2xl font-black uppercase">MeasurePro</span>
+            </Link>
           </div>
 
-          <div className="space-y-2 text-center lg:text-left">
-            <h2 className="text-3xl font-bold tracking-tight">
-              Create an account
+          <div className="mb-8">
+            <div className="flex justify-between items-end mb-4">
+              <span className="text-sm font-black uppercase tracking-widest">
+                Step {step}/{totalSteps}
+              </span>
+              <span className="text-xs font-bold uppercase bg-black text-white px-2 py-1">
+                {step === 1 ? "Identity" : step === 2 ? "Company" : "Security"}
+              </span>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full h-4 border-2 border-black bg-white p-0.5 mb-6">
+              <div
+                className="h-full bg-[#FFDE59] border border-black transition-all duration-300 relative overflow-hidden"
+                style={{ width: `${(step / totalSteps) * 100}%` }}
+              >
+                <div
+                  className="absolute inset-0 opacity-20"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(45deg, #000 25%, transparent 25%, transparent 50%, #000 50%, #000 75%, transparent 75%, transparent)",
+                    backgroundSize: "10px 10px",
+                  }}
+                ></div>
+              </div>
+            </div>
+
+            <h2 className="text-3xl font-black uppercase mb-2">
+              {step === 1 && "Who goes here?"}
+              {step === 2 && "Company Details"}
+              {step === 3 && "Secure Access"}
             </h2>
-            <p className="text-muted-foreground">
-              {step === 1 && "Start with your basic details."}
-              {step === 2 && "Tell us about your company."}
-              {step === 3 && "Secure your account."}
+            <p className="font-bold text-gray-600">
+              {step === 1 && "Start with your name and email."}
+              {step === 2 && "Tell us who you're building with."}
+              {step === 3 && "Create a password stronger than concrete."}
             </p>
           </div>
 
-          {/* Progress Steps */}
-          <div className="flex gap-2 mb-8">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-                  i <= step ? "bg-primary" : "bg-muted"
-                }`}
-              />
-            ))}
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="min-h-[220px]">
+              {error && (
+                <div className="mb-6 p-4 bg-red-100 border-2 border-black text-red-600 font-black flex items-center gap-3 animate-pulse">
+                  <div className="h-3 w-3 bg-red-600 rotate-45"></div>
+                  {error}
+                </div>
+              )}
 
-          <form onSubmit={handleSubmit}>
-            <Card className="border-none shadow-none bg-transparent">
-              <CardContent className="p-0 space-y-6">
-                {error && (
-                  <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-destructive" />
-                    {error}
+              {step === 1 && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-8 duration-300">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-black uppercase">
+                      Full Name
+                    </label>
+                    <input
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                      placeholder="John Builder"
+                      autoFocus
+                    />
                   </div>
-                )}
-
-                <div className="min-h-[200px]">
-                  {step === 1 && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        <div className="relative">
-                          <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="name"
-                            name="name"
-                            placeholder="John Doe"
-                            className="pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/20"
-                            value={formData.name}
-                            onChange={handleChange}
-                            autoFocus
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        <div className="relative">
-                          <Input
-                            id="email"
-                            name="email"
-                            type="email"
-                            placeholder="john@example.com"
-                            className="bg-muted/30 h-11 border-muted-foreground/20 focus-visible:ring-primary/20"
-                            value={formData.email}
-                            onChange={handleChange}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {step === 2 && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                      <div className="space-y-2">
-                        <Label htmlFor="companyName">Company Name</Label>
-                        <div className="relative">
-                          <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="companyName"
-                            name="companyName"
-                            placeholder="Acme Inc."
-                            className="pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/20"
-                            value={formData.companyName}
-                            onChange={handleChange}
-                            autoFocus
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          This will be displayed on your invoices.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {step === 3 && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                      <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="password"
-                            name="password"
-                            type="password"
-                            placeholder="••••••••"
-                            className="pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/20"
-                            value={formData.password}
-                            onChange={handleChange}
-                            autoFocus
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">
-                          Confirm Password
-                        </Label>
-                        <Input
-                          id="confirmPassword"
-                          name="confirmPassword"
-                          type="password"
-                          placeholder="••••••••"
-                          className="h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/20"
-                          value={formData.confirmPassword}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    </div>
-                  )}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-black uppercase">
+                      Email Address
+                    </label>
+                    <input
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                      placeholder="john@example.com"
+                    />
+                  </div>
                 </div>
+              )}
 
-                <div className="flex gap-4 pt-4">
-                  {step > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleBack}
-                      className="h-11 px-6 rounded-lg"
-                    >
-                      <ArrowLeft className="h-4 w-4 mr-2" /> Back
-                    </Button>
-                  )}
+              {step === 2 && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-8 duration-300">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-black uppercase">
+                      Company Name
+                    </label>
+                    <input
+                      name="companyName"
+                      value={formData.companyName}
+                      onChange={handleChange}
+                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                      placeholder="Acme Constructions Ltd."
+                      autoFocus
+                    />
+                    <p className="text-xs font-bold text-gray-500 uppercase mt-2">
+                      * Displays on invoices
+                    </p>
+                  </div>
+                </div>
+              )}
 
-                  {step < totalSteps ? (
-                    <Button
-                      type="button"
-                      onClick={handleNext}
-                      className="flex-1 h-11 rounded-lg shadow-md hover:shadow-lg transition-all"
-                    >
-                      Continue <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
+              {step === 3 && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-8 duration-300">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-black uppercase">
+                      Password
+                    </label>
+                    <input
+                      name="password"
+                      type="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                      placeholder="••••••••"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-black uppercase">
+                      Confirm Password
+                    </label>
+                    <input
+                      name="confirmPassword"
+                      type="password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-4 pt-4 border-t-2 border-black mt-8">
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="px-6 py-4 font-black uppercase border-2 border-black hover:bg-black hover:text-white transition-all flex items-center gap-2"
+                >
+                  <ArrowLeft className="h-5 w-5" /> Back
+                </button>
+              )}
+
+              {step < totalSteps ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="flex-1 bg-black text-white px-6 py-4 font-black uppercase border-2 border-black hover:bg-white hover:text-black hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all flex items-center justify-center gap-2 text-lg"
+                >
+                  Next <ArrowRight className="h-5 w-5" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 bg-[#FFDE59] text-black px-6 py-4 font-black uppercase border-2 border-black hover:brightness-110 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all flex items-center justify-center gap-2 text-lg disabled:opacity-50 disabled:grayscale"
+                >
+                  {loading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
-                    <Button
-                      type="submit"
-                      disabled={loading}
-                      className="flex-1 h-11 rounded-lg shadow-md hover:shadow-lg transition-all"
-                    >
-                      {loading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        "Create Account"
-                      )}
-                    </Button>
+                    "Create Account"
                   )}
-                </div>
-              </CardContent>
-            </Card>
+                </button>
+              )}
+            </div>
           </form>
 
-          <div className="text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Link
-              href="/auth/signin"
-              className="font-semibold text-primary hover:underline underline-offset-4"
-            >
-              Sign in
-            </Link>
+          <div className="mt-8 text-center">
+            <p className="font-bold text-sm">
+              Already have an account?{" "}
+              <Link
+                href="/auth/signin"
+                className="uppercase underline decoration-2 underline-offset-4 hover:bg-black hover:text-white transition-colors px-1"
+              >
+                Sign In
+              </Link>
+            </p>
           </div>
         </div>
       </div>

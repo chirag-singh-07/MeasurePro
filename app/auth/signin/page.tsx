@@ -5,16 +5,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Ruler, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -49,170 +39,149 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-background font-sans">
-      {/* Left Side - Visuals (Consistent with Signup) */}
-      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-primary/5 border-r border-border/50">
-        <div className="absolute inset-0 bg-grid-black/[0.02] bg-[size:20px_20px]" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
+    <div className="min-h-screen flex flex-col md:flex-row bg-[#FFDE59] font-sans text-black selection:bg-black selection:text-white">
+      {/* Left Side - Visuals */}
+      <div className="hidden md:flex w-1/2 flex-col justify-between p-12 border-r-4 border-black bg-white relative overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, #000 1px, transparent 1px)",
+            backgroundSize: "30px 30px",
+          }}
+        ></div>
 
-        <div className="relative z-10">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-xl font-bold tracking-tight mb-8"
-          >
-            <div className="bg-primary/10 p-2 rounded-lg">
-              <Ruler className="h-6 w-6 text-primary" />
+        <div className="relative z-10 w-full h-full flex flex-col justify-between">
+          <Link href="/" className="flex items-center gap-3 w-fit group">
+            <div className="bg-black text-white p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 transition-all">
+              <Ruler className="h-8 w-8" />
             </div>
-            MeasurePro
+            <span className="text-3xl font-black uppercase tracking-tight">
+              MeasurePro
+            </span>
           </Link>
 
-          <div className="max-w-md">
-            <h2 className="text-3xl font-bold tracking-tight lg:text-4xl mb-4">
-              Welcome back.
+          <div className="space-y-6">
+            <h2 className="text-5xl font-black uppercase leading-[0.9]">
+              Welcome
+              <br />
+              Back,
+              <br />
+              Builder.
             </h2>
-            <p className="text-muted-foreground text-lg">
-              Log in to access your projects, generate invoices, and track your
-              measurements.
+            <div className="h-4 w-24 bg-black"></div>
+            <p className="text-xl font-bold max-w-sm">
+              Your projects are exactly where you left them. Safe, secure, and
+              ready to bill.
             </p>
           </div>
-        </div>
 
-        <div className="relative z-10">
-          <div className="p-6 rounded-2xl bg-background/60 backdrop-blur-md border border-white/20 shadow-lg max-w-sm">
-            <div className="flex gap-4 items-start">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
-                RK
-              </div>
-              <div>
-                <p className="text-sm italic text-muted-foreground mb-2">
-                  "MeasurePro has completely transformed how we handle billing.
-                  It's indispensable."
-                </p>
-                <p className="font-semibold text-sm">Rajesh Kumar</p>
-                <p className="text-xs text-muted-foreground">
-                  Project Manager, RK Constructions
-                </p>
-              </div>
-            </div>
+          <div className="flex gap-4 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+            <span className="text-xl font-black uppercase border-b-4 border-black">
+              500+ Active Sites
+            </span>
           </div>
         </div>
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex flex-col justify-center items-center p-6 lg:p-12 relative bg-background">
-        <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-500">
-          <div className="lg:hidden flex items-center justify-center gap-2 font-bold text-xl mb-8">
-            <div className="bg-primary/10 p-2 rounded-lg">
-              <Ruler className="h-6 w-6 text-primary" />
-            </div>
-            MeasurePro
+      <div className="w-full md:w-1/2 flex flex-col justify-center px-8 sm:px-16 py-12 relative bg-[#FFDE59]">
+        <div className="w-full max-w-md mx-auto bg-white border-4 border-black p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative transition-transform hover:-translate-y-1 hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] duration-300">
+          {/* Corner decorations */}
+          <div className="absolute -top-3 -left-3 h-6 w-6 bg-black"></div>
+          <div className="absolute -bottom-3 -right-3 h-6 w-6 bg-black"></div>
+
+          {/* Mobile Header */}
+          <div className="md:hidden mb-8 flex items-center justify-center">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="bg-black text-white p-1 border-2 border-black">
+                <Ruler className="h-6 w-6" />
+              </div>
+              <span className="text-2xl font-black uppercase">MeasurePro</span>
+            </Link>
           </div>
 
-          <div className="text-center lg:text-left space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Sign in to your account
-            </h1>
-            <p className="text-muted-foreground">
-              Enter your email below to login
+          <div className="mb-8 border-b-4 border-black pb-4">
+            <h1 className="text-4xl font-black uppercase mb-1">Sign In</h1>
+            <p className="font-bold text-gray-500">Access your dashboard</p>
+          </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-100 border-2 border-black text-red-600 font-black flex items-center gap-3 animate-pulse shadow-[4px_4px_0px_0px_#000]">
+              <div className="h-3 w-3 bg-red-600 rotate-45"></div>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-black uppercase flex items-center gap-2">
+                <Mail className="h-4 w-4" /> Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                placeholder="m@example.com"
+                autoFocus
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="block text-sm font-black uppercase flex items-center gap-2">
+                  <Lock className="h-4 w-4" /> Password
+                </label>
+                <Link
+                  href="#"
+                  className="text-xs font-black uppercase underline decoration-2 hover:bg-black hover:text-white px-1 transition-colors"
+                >
+                  Forgot?
+                </Link>
+              </div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                placeholder="••••••••"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-black text-white py-4 font-black uppercase border-2 border-black hover:bg-white hover:text-black hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all flex items-center justify-center gap-2 text-xl mt-4 disabled:opacity-50 disabled:grayscale"
+            >
+              {loading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <>
+                  Sign In <ArrowRight className="h-5 w-5" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-8 pt-6 border-t-2 border-black text-center">
+            <p className="font-bold text-sm mb-4">Or sign in with</p>
+            <button className="w-full py-3 border-2 border-black bg-white font-black uppercase hover:bg-[#f0f0f0] transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] opacity-50 cursor-not-allowed">
+              Google (Coming Soon)
+            </button>
+          </div>
+
+          <div className="mt-6 text-center">
+            <p className="font-bold text-sm">
+              New here?{" "}
+              <Link
+                href="/auth/signup"
+                className="uppercase underline decoration-2 underline-offset-4 hover:bg-black hover:text-white transition-colors px-1"
+              >
+                Create Account
+              </Link>
             </p>
           </div>
-
-          <Card className="border-none shadow-none bg-transparent pt-6">
-            <CardContent className="p-0 space-y-6">
-              {error && (
-                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md flex items-center gap-2 animate-in fade-in zoom-in duration-300">
-                  <div className="h-1.5 w-1.5 rounded-full bg-destructive" />
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/20 transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link
-                      href="#"
-                      className="text-sm font-medium text-primary hover:underline underline-offset-4"
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="pl-10 h-11 bg-muted/30 border-muted-foreground/20 focus-visible:ring-primary/20 transition-all"
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full h-11 rounded-lg shadow-md hover:shadow-lg transition-all text-base font-semibold"
-                >
-                  {loading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      Sign In <ArrowRight className="ml-2 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-              </form>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-muted-foreground/20" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-
-              <Button
-                variant="outline"
-                type="button"
-                disabled
-                className="w-full h-11 rounded-lg"
-              >
-                Google (Coming Soon)
-              </Button>
-            </CardContent>
-          </Card>
-
-          <p className="text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link
-              href="/auth/signup"
-              className="font-semibold text-primary hover:underline underline-offset-4"
-            >
-              Sign up
-            </Link>
-          </p>
         </div>
       </div>
     </div>
