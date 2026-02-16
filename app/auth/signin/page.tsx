@@ -1,21 +1,36 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Ruler, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
+import { useToast } from "@/components/ui/toast-context";
 
 export default function SignInPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (searchParams?.get("registered") === "true") {
+      // Defer toast to ensure provider is ready
+      setTimeout(() => {
+        toast({
+          title: "Account Created!",
+          description: "Please sign in with your new credentials.",
+          type: "success",
+          duration: 5000,
+        });
+      }, 500);
+    }
+  }, [searchParams, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -26,14 +41,27 @@ export default function SignInPage() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        toast({
+          title: "Access Denied",
+          description: "Invalid email or password. Please try again.",
+          type: "error",
+        });
+        setLoading(false);
       } else {
+        toast({
+          title: "Welcome Back",
+          description: "Redirecting to your dashboard...",
+          type: "success",
+        });
         router.push("/dashboard");
         router.refresh();
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
-    } finally {
+      toast({
+        title: "System Error",
+        description: "An unexpected error occurred. Please try again later.",
+        type: "error",
+      });
       setLoading(false);
     }
   };
@@ -71,8 +99,8 @@ export default function SignInPage() {
             </h2>
             <div className="h-4 w-24 bg-black"></div>
             <p className="text-xl font-bold max-w-sm">
-              Your projects are exactly where you left them. Safe, secure, and
-              ready to bill.
+              Your projects are exactly where you left them. <br />
+              Safe, secure, and ready to bill.
             </p>
           </div>
 
@@ -106,13 +134,6 @@ export default function SignInPage() {
             <p className="font-bold text-gray-500">Access your dashboard</p>
           </div>
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-100 border-2 border-black text-red-600 font-black flex items-center gap-3 animate-pulse shadow-[4px_4px_0px_0px_#000]">
-              <div className="h-3 w-3 bg-red-600 rotate-45"></div>
-              {error}
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <label className="block text-sm font-black uppercase flex items-center gap-2">
@@ -122,7 +143,7 @@ export default function SignInPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
                 placeholder="m@example.com"
                 autoFocus
               />
@@ -144,7 +165,7 @@ export default function SignInPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
                 placeholder="••••••••"
               />
             </div>

@@ -12,11 +12,12 @@ import {
   Building2,
   Lock,
   Loader2,
-  Sparkles,
 } from "lucide-react";
+import { useToast } from "@/components/ui/toast-context";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     companyName: "",
@@ -25,14 +26,12 @@ export default function SignUpPage() {
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const totalSteps = 3;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError("");
   };
 
   const validateStep = (currentStep: number) => {
@@ -58,7 +57,11 @@ export default function SignUpPage() {
   const handleNext = () => {
     const err = validateStep(step);
     if (err) {
-      setError(err);
+      toast({
+        title: "Validation Error",
+        description: err,
+        type: "error",
+      });
       return;
     }
     setStep((prev) => Math.min(prev + 1, totalSteps));
@@ -66,14 +69,17 @@ export default function SignUpPage() {
 
   const handleBack = () => {
     setStep((prev) => Math.max(prev - 1, 1));
-    setError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const err = validateStep(3);
     if (err) {
-      setError(err);
+      toast({
+        title: "Validation Error",
+        description: err,
+        type: "error",
+      });
       return;
     }
 
@@ -94,14 +100,28 @@ export default function SignUpPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "An error occurred");
+        toast({
+          title: "Sign Up Failed",
+          description: data.error || "An error occurred",
+          type: "error",
+        });
         setLoading(false);
         return;
       }
 
+      toast({
+        title: "Success! Welcome aboard.",
+        description: "Your account has been created. Please sign in.",
+        type: "success",
+      });
+
       router.push("/auth/signin?registered=true");
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      toast({
+        title: "Network Error",
+        description: "An error occurred. Please try again.",
+        type: "error",
+      });
       setLoading(false);
     }
   };
@@ -226,24 +246,17 @@ export default function SignUpPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="min-h-[220px]">
-              {error && (
-                <div className="mb-6 p-4 bg-red-100 border-2 border-black text-red-600 font-black flex items-center gap-3 animate-pulse">
-                  <div className="h-3 w-3 bg-red-600 rotate-45"></div>
-                  {error}
-                </div>
-              )}
-
               {step === 1 && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-8 duration-300">
                   <div className="space-y-2">
-                    <label className="block text-sm font-black uppercase">
-                      Full Name
+                    <label className="block text-sm font-black uppercase flex items-center gap-2">
+                      <User className="h-4 w-4" /> Full Name
                     </label>
                     <input
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
                       placeholder="John Builder"
                       autoFocus
                     />
@@ -257,7 +270,7 @@ export default function SignUpPage() {
                       type="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
                       placeholder="john@example.com"
                     />
                   </div>
@@ -267,14 +280,14 @@ export default function SignUpPage() {
               {step === 2 && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-8 duration-300">
                   <div className="space-y-2">
-                    <label className="block text-sm font-black uppercase">
-                      Company Name
+                    <label className="block text-sm font-black uppercase flex items-center gap-2">
+                      <Building2 className="h-4 w-4" /> Company Name
                     </label>
                     <input
                       name="companyName"
                       value={formData.companyName}
                       onChange={handleChange}
-                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
                       placeholder="Acme Constructions Ltd."
                       autoFocus
                     />
@@ -288,29 +301,29 @@ export default function SignUpPage() {
               {step === 3 && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-8 duration-300">
                   <div className="space-y-2">
-                    <label className="block text-sm font-black uppercase">
-                      Password
+                    <label className="block text-sm font-black uppercase flex items-center gap-2">
+                      <Lock className="h-4 w-4" /> Password
                     </label>
                     <input
                       name="password"
                       type="password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
                       placeholder="••••••••"
                       autoFocus
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-sm font-black uppercase">
-                      Confirm Password
+                    <label className="block text-sm font-black uppercase flex items-center gap-2">
+                      <Check className="h-4 w-4" /> Confirm Password
                     </label>
                     <input
                       name="confirmPassword"
                       type="password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
+                      className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
                       placeholder="••••••••"
                     />
                   </div>
