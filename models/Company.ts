@@ -43,6 +43,12 @@ const CompanySchema = new Schema<ICompany>(
   },
 );
 
+// Create indexes for faster queries
+CompanySchema.index({ owner: 1 }); // Find companies by owner
+CompanySchema.index({ subscriptionPlan: 1 }); // Find companies by subscription plan
+CompanySchema.index({ createdAt: -1 }); // Sort by creation date
+CompanySchema.index({ stripeCustomerId: 1 }); // Find companies by Stripe ID
+
 const Company: Model<ICompany> =
   mongoose.models.Company || mongoose.model<ICompany>("Company", CompanySchema);
 

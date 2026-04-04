@@ -63,6 +63,12 @@ UserSchema.methods.comparePassword = async function (
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
+// Create indexes for faster queries
+UserSchema.index({ email: 1 }); // Already unique, but explicit
+UserSchema.index({ companyId: 1 }); // Find users by company
+UserSchema.index({ companyId: 1, role: 1 }); // Find users by company and role
+UserSchema.index({ createdAt: -1 }); // Sort by creation date
+
 const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
 
