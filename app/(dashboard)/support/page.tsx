@@ -1,5 +1,5 @@
-import { ComingSoon } from "@/components/coming-soon";
+import SupportPageContent from "./support-content";
 
 export default function SupportPage() {
-  return <ComingSoon title="Help & Support" />;
+  return <SupportPageContent />;
 }
