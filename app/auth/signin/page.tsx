@@ -1,71 +1,9 @@
-"use client";
-
-import { signIn } from "next-auth/react";
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Ruler, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
-import { useToast } from "@/components/ui/toast-context";
+import { Ruler } from "lucide-react";
+import { Suspense } from "react";
+import { SignInForm } from "./signin-form";
 
 export default function SignInPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { toast } = useToast();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (searchParams?.get("registered") === "true") {
-      // Defer toast to ensure provider is ready
-      setTimeout(() => {
-        toast({
-          title: "Account Created!",
-          description: "Please sign in with your new credentials.",
-          type: "success",
-          duration: 5000,
-        });
-      }, 500);
-    }
-  }, [searchParams, toast]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        toast({
-          title: "Access Denied",
-          description: "Invalid email or password. Please try again.",
-          type: "error",
-        });
-        setLoading(false);
-      } else {
-        toast({
-          title: "Welcome Back",
-          description: "Redirecting to your dashboard...",
-          type: "success",
-        });
-        router.push("/dashboard");
-        router.refresh();
-      }
-    } catch (err) {
-      toast({
-        title: "System Error",
-        description: "An unexpected error occurred. Please try again later.",
-        type: "error",
-      });
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#FFDE59] font-sans text-black selection:bg-black selection:text-white">
       {/* Left Side - Visuals */}
@@ -114,96 +52,9 @@ export default function SignInPage() {
 
       {/* Right Side - Form */}
       <div className="w-full md:w-1/2 flex flex-col justify-center px-8 sm:px-16 py-12 relative bg-[#FFDE59]">
-        <div className="w-full max-w-md mx-auto bg-white border-4 border-black p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative transition-transform hover:-translate-y-1 hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] duration-300">
-          {/* Corner decorations */}
-          <div className="absolute -top-3 -left-3 h-6 w-6 bg-black"></div>
-          <div className="absolute -bottom-3 -right-3 h-6 w-6 bg-black"></div>
-
-          {/* Mobile Header */}
-          <div className="md:hidden mb-8 flex items-center justify-center">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="bg-black text-white p-1 border-2 border-black">
-                <Ruler className="h-6 w-6" />
-              </div>
-              <span className="text-2xl font-black uppercase">MeasurePro</span>
-            </Link>
-          </div>
-
-          <div className="mb-8 border-b-4 border-black pb-4">
-            <h1 className="text-4xl font-black uppercase mb-1">Sign In</h1>
-            <p className="font-bold text-gray-500">Access your dashboard</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="block text-sm font-black uppercase flex items-center gap-2">
-                <Mail className="h-4 w-4" /> Email Address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
-                placeholder="m@example.com"
-                autoFocus
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <label className="block text-sm font-black uppercase flex items-center gap-2">
-                  <Lock className="h-4 w-4" /> Password
-                </label>
-                <Link
-                  href="#"
-                  className="text-xs font-black uppercase underline decoration-2 hover:bg-black hover:text-white px-1 transition-colors"
-                >
-                  Forgot?
-                </Link>
-              </div>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border-2 border-black p-4 font-bold text-lg bg-[#f0f0f0] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400"
-                placeholder="••••••••"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-black text-white py-4 font-black uppercase border-2 border-black hover:bg-white hover:text-black hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all flex items-center justify-center gap-2 text-xl mt-4 disabled:opacity-50 disabled:grayscale"
-            >
-              {loading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <>
-                  Sign In <ArrowRight className="h-5 w-5" />
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="mt-8 pt-6 border-t-2 border-black text-center">
-            <p className="font-bold text-sm mb-4">Or sign in with</p>
-            <button className="w-full py-3 border-2 border-black bg-white font-black uppercase hover:bg-[#f0f0f0] transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] opacity-50 cursor-not-allowed">
-              Google (Coming Soon)
-            </button>
-          </div>
-
-          <div className="mt-6 text-center">
-            <p className="font-bold text-sm">
-              New here?{" "}
-              <Link
-                href="/auth/signup"
-                className="uppercase underline decoration-2 underline-offset-4 hover:bg-black hover:text-white transition-colors px-1"
-              >
-                Create Account
-              </Link>
-            </p>
-          </div>
-        </div>
+        <Suspense fallback={<div className="w-full max-w-md mx-auto h-96 bg-white border-4 border-black" />}>
+          <SignInForm />
+        </Suspense>
       </div>
     </div>
   );

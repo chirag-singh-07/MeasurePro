@@ -30,7 +30,7 @@ export default async function ProjectsPage() {
     redirect("/auth/signin");
   }
 
-  const projects = await getProjects(session.user.companyId);
+  const projects = await getProjects(session.user.companyId ?? "");
 
   return (
     <div className="space-y-6">

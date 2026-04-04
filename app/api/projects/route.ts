@@ -25,6 +25,13 @@ export async function POST(request: NextRequest) {
 
     // Check project limit
     const company = await Company.findById(session.user.companyId);
+    if (!company) {
+      return NextResponse.json(
+        { error: "Company not found" },
+        { status: 404 },
+      );
+    }
+
     const projectCount = await Project.countDocuments({
       companyId: session.user.companyId,
     });

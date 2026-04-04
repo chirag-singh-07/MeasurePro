@@ -1,6 +1,6 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "@/lib/auth-client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -15,7 +15,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -35,6 +35,21 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [enrichedUser, setEnrichedUser] = useState<any>(null);
+
+  // Fetch enriched user data from API
+  useEffect(() => {
+    if (session?.user) {
+      fetch("/api/profile")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.user) {
+            setEnrichedUser(data.user);
+          }
+        })
+        .catch((err) => console.error("Failed to fetch enriched profile:", err));
+    }
+  }, [session?.user]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -68,10 +83,10 @@ export default function DashboardLayout({
               <div className="mt-4">
                 <p className="text-sm font-semibold">{session.user.name}</p>
                 <p className="text-xs text-gray-600">
-                  {session.user.companyName}
+                  {enrichedUser?.companyName || "Loading..."}
                 </p>
                 <span className="inline-block mt-1 px-2 py-1 text-xs font-semibold bg-black text-white">
-                  {session.user.role}
+                  {enrichedUser?.role || "Worker"}
                 </span>
               </div>
             )}
@@ -103,7 +118,7 @@ export default function DashboardLayout({
           {/* Logout */}
           <div className="p-4 border-t-2 border-black">
             <button
-              onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+              onClick={() => signOut().then(() => (window.location.href = "/auth/signin"))}
               className="flex items-center gap-3 w-full px-4 py-3 font-semibold text-red-600 hover:bg-red-50 transition-all"
             >
               <LogOut className="w-5 h-5" />

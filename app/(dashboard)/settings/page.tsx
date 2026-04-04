@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { signOut } from "@/auth";
 
 export default async function SettingsPage() {
   const session = await auth();
