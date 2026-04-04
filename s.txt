@@ -1,0 +1,1 @@
+okey so auth token was crrated i can see on the broswer application section so i think that session was created you need to check the route and session handler for this

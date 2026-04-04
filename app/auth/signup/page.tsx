@@ -14,7 +14,6 @@ import {
   Loader2,
 } from "lucide-react";
 import { useToast } from "@/components/ui/toast-context";
-import { signIn } from "@/lib/auth-client";
 import { Loading } from "@/components/loading";
 
 export default function SignUpPage() {
@@ -112,13 +111,20 @@ export default function SignUpPage() {
         return;
       }
 
-      // Automatically sign in after signup using better-auth
-      const result = await signIn.email({
-        email: formData.email,
-        password: formData.password,
+      // Automatically sign in after signup
+      const signinResponse = await fetch("/api/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // Include cookies in the request
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
       });
 
-      if (result.error) {
+      const signinData = await signinResponse.json();
+
+      if (!signinResponse.ok) {
         // Signup was successful but signin failed, redirect to signin page
         toast({
           title: "Account Created!",

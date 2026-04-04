@@ -1,6 +1,7 @@
 "use client";
 
-import { signOut, useSession } from "@/lib/auth-client";
+import { signOut } from "@/lib/auth-client";
+import { useAuthSession } from "@/lib/use-auth-session";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -35,13 +36,16 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session, isPending } = useSession();
+  const { data: session, isPending } = useAuthSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [enrichedUser, setEnrichedUser] = useState<any>(null);
 
   // Redirect to signin if no session after loading
   useEffect(() => {
-    if (!isPending && !session) {
+    // Only redirect if:
+    // 1. We're done loading (!isPending) AND
+    // 2. We explicitly have no session (session === null, not just falsy)
+    if (!isPending && session === null) {
       router.push("/auth/signin");
     }
   }, [session, isPending, router]);
@@ -49,7 +53,10 @@ export default function DashboardLayout({
   // Fetch enriched user data from API
   useEffect(() => {
     if (session?.user) {
-      fetch("/api/profile")
+      fetch("/api/profile", {
+        method: "GET",
+        credentials: "include", // Include cookies in the request
+      })
         .then((res) => res.json())
         .then((data) => {
           if (data.user) {
@@ -100,7 +107,7 @@ export default function DashboardLayout({
                   {enrichedUser?.companyName || "Loading..."}
                 </p>
                 <span className="inline-block mt-1 px-2 py-1 text-xs font-semibold bg-black text-white">
-                  {enrichedUser?.role || "Worker"}
+                  {enrichedUser?.subscriptionPlan || "Basic"} Plan
                 </span>
               </div>
             )}

@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Ruler, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
 import { useToast } from "@/components/ui/toast-context";
-import { signIn } from "@/lib/auth-client";
 import { Loading } from "@/components/loading";
 
 export function SignInForm() {
@@ -35,16 +34,20 @@ export function SignInForm() {
     setLoading(true);
 
     try {
-      // Use better-auth signIn method
-      const result = await signIn.email({
-        email,
-        password,
+      // Use our signin endpoint
+      const response = await fetch("/api/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // Include cookies in the request
+        body: JSON.stringify({ email, password }),
       });
 
-      if (result.error) {
+      const data = await response.json();
+
+      if (!response.ok) {
         toast({
           title: "Access Denied",
-          description: result.error.message || "Invalid email or password. Please try again.",
+          description: data.error || "Invalid email or password. Please try again.",
           type: "error",
         });
         setLoading(false);

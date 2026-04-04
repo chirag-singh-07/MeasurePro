@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
 import { client } from "./mongodb";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import connectDB from "./mongodb";
 import UserModel from "@/models/User";
 import CompanyModel from "@/models/Company";
@@ -54,49 +54,69 @@ export interface EnrichedSession {
   };
 }
 
-/**
- * Server-side session helper.
- * Always returns an EnrichedSession (with companyId / role) or null.
- */
 export async function auth(): Promise<EnrichedSession | null> {
-  const session = await authInstance.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session?.user) return null;
-
-  // Enrich with companyId, companyName, role from our own User+Company models
   try {
-    await connectDB();
-    const dbUser = await UserModel.findOne({ email: session.user.email })
-      .populate<{ companyId: { _id: unknown; name: string } }>("companyId")
-      .lean();
+    // Read auth-token cookie (server-side)
+    const cookieStore = await cookies();
+    const authToken = cookieStore.get("auth-token")?.value;
 
-    if (dbUser) {
-      return {
-        ...session,
-        user: {
-          ...(session.user as EnrichedUser),
-          role: dbUser.role as string,
-          companyId: (dbUser.companyId as any)?._id?.toString() ?? "",
-          companyName: (dbUser.companyId as any)?.name ?? "",
-        },
-      } as EnrichedSession;
+    if (!authToken) {
+      return null;
     }
-  } catch {
-    // If enrichment fails, return the plain session with safe defaults
-  }
 
-  // Fallback: return plain session cast to EnrichedSession with empty strings
-  return {
-    ...session,
-    user: {
-      ...(session.user as EnrichedUser),
-      role: (session.user as any).role ?? "",
-      companyId: (session.user as any).companyId ?? "",
-      companyName: (session.user as any).companyName ?? "",
-    },
-  } as EnrichedSession;
+    // Connect and fetch user by ID (without populate to avoid schema registration issues)
+    await connectDB();
+    const dbUser = await UserModel.findById(authToken).lean();
+
+    if (!dbUser) {
+      return null;
+    }
+
+    // Manually fetch company to avoid populate schema issues
+    let companyName = "";
+    let companyId = "";
+    
+    if (dbUser.companyId) {
+      try {
+        const company = await CompanyModel.findById(dbUser.companyId).lean();
+        if (company) {
+          companyName = company.name;
+          companyId = company._id?.toString() || "";
+        }
+      } catch (err) {
+        // Failed to fetch company
+        // Continue without company info
+      }
+    }
+
+    // Return enriched session
+    const enrichedSession: EnrichedSession = {
+      user: {
+        id: dbUser._id?.toString() ?? "",
+        email: dbUser.email ?? "",
+        name: dbUser.name ?? "",
+        image: null,
+        emailVerified: true,
+        createdAt: dbUser.createdAt ?? new Date(),
+        updatedAt: dbUser.updatedAt ?? new Date(),
+        role: dbUser.role as string,
+        companyId: companyId,
+        companyName: companyName,
+      },
+      session: {
+        id: authToken,
+        userId: dbUser._id?.toString() ?? "",
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+        token: authToken,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    };
+
+    return enrichedSession;
+  } catch (error) {
+    return null;
+  }
 }
 
 // Re-export the type for use elsewhere
