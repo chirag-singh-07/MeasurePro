@@ -2,7 +2,7 @@
 
 import { signOut, useSession } from "@/lib/auth-client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   FolderKanban,
@@ -33,9 +33,17 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [enrichedUser, setEnrichedUser] = useState<any>(null);
+
+  // Redirect to signin if no session after loading
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.push("/auth/signin");
+    }
+  }, [session, isPending, router]);
 
   // Fetch enriched user data from API
   useEffect(() => {
@@ -50,6 +58,17 @@ export default function DashboardLayout({
         .catch((err) => console.error("Failed to fetch enriched profile:", err));
     }
   }, [session?.user]);
+
+  // Show loading state while checking session
+  if (isPending) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

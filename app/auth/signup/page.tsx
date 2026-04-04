@@ -153,7 +153,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-[#FFDE59] font-sans text-black selection:bg-black selection:text-white">
+    <div suppressHydrationWarning className="min-h-screen flex flex-col md:flex-row bg-[#FFDE59] font-sans text-black selection:bg-black selection:text-white">
       {/* Left Side - Visuals / Branding */}
       <div className="hidden md:flex w-1/2 flex-col justify-between p-12 border-r-4 border-black bg-white relative overflow-hidden">
         <div
