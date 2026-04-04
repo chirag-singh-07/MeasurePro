@@ -10,6 +10,7 @@ import {
   Star,
 } from "lucide-react";
 import { Navbar } from "@/components/navbar";
+import  {Footer} from "@/components/footer";
 
 export default function LandingPage() {
   return (
@@ -345,7 +346,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        
+
 
         {/* CTA Section */}
         <section className="w-full py-24 bg-black text-white border-b-2 border-black">
@@ -366,7 +367,7 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-16 bg-white">
+      {/* <footer className="w-full py-16 bg-white">
         <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
             <div className="space-y-4">
@@ -415,7 +416,8 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
+      <Footer/>
     </div>
   );
 }
