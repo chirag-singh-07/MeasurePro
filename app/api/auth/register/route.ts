@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import UserModel from "@/models/User";
 import CompanyModel from "@/models/Company";
+import bcrypt from "bcryptjs";
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password, name, companyName } = await request.json();
 
-    // Validation
     if (!email || !password || !name || !companyName) {
       return NextResponse.json(
         { error: "All fields are required" },
@@ -15,16 +15,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (password.length < 6) {
+    // Validate email format
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: "Password must be at least 6 characters" },
+        { error: "Invalid email format" },
         { status: 400 }
       );
     }
 
-    if (!/\S+@\S+\.\S+/.test(email)) {
+    // Validate password length
+    if (password.length < 6) {
       return NextResponse.json(
-        { error: "Invalid email format" },
+        { error: "Password must be at least 6 characters" },
         { status: 400 }
       );
     }
@@ -36,51 +39,50 @@ export async function POST(request: NextRequest) {
     if (existingUser) {
       return NextResponse.json(
         { error: "Email already registered" },
-        { status: 409 }
+        { status: 400 }
       );
     }
 
-    // Create company first
-    const company = await CompanyModel.create({
+    // Create company
+    const company = new CompanyModel({
       name: companyName,
       subscriptionPlan: "Basic",
       projectLimit: 5,
     });
+    await company.save();
 
-    // Create user - password will be hashed by the model's pre-save hook
-    const user = await UserModel.create({
-      email,
+    // Create user (password will be hashed by pre-save hook)
+    const user = new UserModel({
       name,
-      password, // Don't hash here - let the model do it
-      role: "Admin",
+      email,
+      password,
       companyId: company._id,
+      role: "Admin",
     });
+    await user.save();
 
     // Update company with owner
-    await CompanyModel.findByIdAndUpdate(company._id, { owner: user._id });
+    company.owner = user._id;
+    await company.save();
+
+    console.log(`New user registered: ${email}`);
 
     return NextResponse.json(
       {
         success: true,
-        message: "Account created successfully",
+        message: "User registered successfully",
         user: {
           id: user._id,
           email: user.email,
           name: user.name,
-          companyId: company._id,
         },
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Signup error:", error);
+    console.error("Registration error:", error);
     return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "An error occurred during signup",
-      },
+      { error: "An error occurred during registration" },
       { status: 500 }
     );
   }

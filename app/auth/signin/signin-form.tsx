@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Ruler, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
 import { useToast } from "@/components/ui/toast-context";
+import { signIn } from "@/lib/auth-client";
+import { Loading } from "@/components/loading";
 
 export function SignInForm() {
   const router = useRouter();
@@ -33,18 +35,16 @@ export function SignInForm() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      // Use better-auth signIn method
+      const result = await signIn.email({
+        email,
+        password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
+      if (result.error) {
         toast({
           title: "Access Denied",
-          description: data.error || "Invalid email or password. Please try again.",
+          description: result.error.message || "Invalid email or password. Please try again.",
           type: "error",
         });
         setLoading(false);
@@ -58,7 +58,8 @@ export function SignInForm() {
       });
       router.push("/dashboard");
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error("Sign in error:", error);
       toast({
         title: "Network Error",
         description: "An unexpected error occurred. Please try again later.",
@@ -67,6 +68,10 @@ export function SignInForm() {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loading text="Signing you in..." fullScreen />;
+  }
 
   return (
     <div className="w-full max-w-md mx-auto bg-white border-4 border-black p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative transition-transform hover:-translate-y-1 hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] duration-300">

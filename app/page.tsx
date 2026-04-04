@@ -345,6 +345,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+        
 
         {/* CTA Section */}
         <section className="w-full py-24 bg-black text-white border-b-2 border-black">

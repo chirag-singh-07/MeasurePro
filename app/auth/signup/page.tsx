@@ -14,6 +14,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { useToast } from "@/components/ui/toast-context";
+import { signIn } from "@/lib/auth-client";
+import { Loading } from "@/components/loading";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -86,8 +88,8 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      // First, sign up the user
-      const signupResponse = await fetch("/api/auth/signup", {
+      // First, register the user with custom company creation
+      const registerResponse = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -98,31 +100,25 @@ export default function SignUpPage() {
         }),
       });
 
-      const signupData = await signupResponse.json();
+      const registerData = await registerResponse.json();
 
-      if (!signupResponse.ok) {
+      if (!registerResponse.ok) {
         toast({
           title: "Sign Up Failed",
-          description: signupData.error || "An error occurred",
+          description: registerData.error || "An error occurred",
           type: "error",
         });
         setLoading(false);
         return;
       }
 
-      // Automatically sign in after signup
-      const signinResponse = await fetch("/api/auth/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+      // Automatically sign in after signup using better-auth
+      const result = await signIn.email({
+        email: formData.email,
+        password: formData.password,
       });
 
-      const signinData = await signinResponse.json();
-
-      if (!signinResponse.ok) {
+      if (result.error) {
         // Signup was successful but signin failed, redirect to signin page
         toast({
           title: "Account Created!",
@@ -142,7 +138,8 @@ export default function SignUpPage() {
 
       router.push("/dashboard");
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error("Signup error:", error);
       toast({
         title: "Network Error",
         description: "An error occurred. Please try again.",
@@ -151,6 +148,10 @@ export default function SignUpPage() {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loading text="Creating your account..." fullScreen />;
+  }
 
   return (
     <div suppressHydrationWarning className="min-h-screen flex flex-col md:flex-row bg-[#FFDE59] font-sans text-black selection:bg-black selection:text-white">

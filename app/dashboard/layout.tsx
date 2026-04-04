@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Loading } from "@/components/loading";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -61,13 +62,7 @@ export default function DashboardLayout({
 
   // Show loading state while checking session
   if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <Loading text="Loading Dashboard..." fullScreen />;
   }
 
   return (
