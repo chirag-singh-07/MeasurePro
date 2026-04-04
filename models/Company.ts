@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface ICompany extends Document {
   name: string;
+  owner?: mongoose.Types.ObjectId;
   subscriptionPlan: "Basic" | "Pro" | "Enterprise";
   stripeCustomerId?: string;
   projectLimit: number;
@@ -16,6 +17,10 @@ const CompanySchema = new Schema<ICompany>(
       type: String,
       required: [true, "Company name is required"],
       trim: true,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
     subscriptionPlan: {
       type: String,

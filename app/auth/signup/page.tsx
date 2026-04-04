@@ -86,7 +86,8 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      // First, sign up the user
+      const signupResponse = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -97,26 +98,51 @@ export default function SignUpPage() {
         }),
       });
 
-      const data = await response.json();
+      const signupData = await signupResponse.json();
 
-      if (!response.ok) {
+      if (!signupResponse.ok) {
         toast({
           title: "Sign Up Failed",
-          description: data.error || "An error occurred",
+          description: signupData.error || "An error occurred",
           type: "error",
         });
         setLoading(false);
         return;
       }
 
+      // Automatically sign in after signup
+      const signinResponse = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const signinData = await signinResponse.json();
+
+      if (!signinResponse.ok) {
+        // Signup was successful but signin failed, redirect to signin page
+        toast({
+          title: "Account Created!",
+          description: "Please sign in with your credentials.",
+          type: "success",
+        });
+        router.push("/auth/signin?registered=true");
+        return;
+      }
+
+      // Auto sign in successful, redirect to dashboard
       toast({
-        title: "Success! Welcome aboard.",
-        description: "Your account has been created. Please sign in.",
+        title: "Welcome!",
+        description: "Your account has been created. Redirecting to dashboard...",
         type: "success",
       });
 
-      router.push("/auth/signin?registered=true");
-    } catch (err) {
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
       toast({
         title: "Network Error",
         description: "An error occurred. Please try again.",
@@ -245,11 +271,11 @@ export default function SignUpPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="min-h-[220px]">
+            <div className="min-h-55">
               {step === 1 && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-8 duration-300">
                   <div className="space-y-2">
-                    <label className="block text-sm font-black uppercase flex items-center gap-2">
+                    <label className="text-sm font-black uppercase flex items-center gap-2">
                       <User className="h-4 w-4" /> Full Name
                     </label>
                     <input
@@ -280,7 +306,7 @@ export default function SignUpPage() {
               {step === 2 && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-8 duration-300">
                   <div className="space-y-2">
-                    <label className="block text-sm font-black uppercase flex items-center gap-2">
+                    <label className="text-sm font-black uppercase flex items-center gap-2">
                       <Building2 className="h-4 w-4" /> Company Name
                     </label>
                     <input
@@ -301,7 +327,7 @@ export default function SignUpPage() {
               {step === 3 && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-8 duration-300">
                   <div className="space-y-2">
-                    <label className="block text-sm font-black uppercase flex items-center gap-2">
+                    <label className="text-sm font-black uppercase flex items-center gap-2">
                       <Lock className="h-4 w-4" /> Password
                     </label>
                     <input
@@ -315,7 +341,7 @@ export default function SignUpPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="block text-sm font-black uppercase flex items-center gap-2">
+                    <label className="text-sm font-black uppercase flex items-center gap-2">
                       <Check className="h-4 w-4" /> Confirm Password
                     </label>
                     <input
@@ -346,7 +372,7 @@ export default function SignUpPage() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="flex-1 bg-black text-white px-6 py-4 font-black uppercase border-2 border-black hover:bg-white hover:text-black hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all flex items-center justify-center gap-2 text-lg"
+                  className="flex-1 bg-black text-white px-6 py-4 font-black uppercase border-2 border-black hover:bg-white hover:text-black hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1.5 active:translate-y-1.5 transition-all flex items-center justify-center gap-2 text-lg"
                 >
                   Next <ArrowRight className="h-5 w-5" />
                 </button>
@@ -354,7 +380,7 @@ export default function SignUpPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-[#FFDE59] text-black px-6 py-4 font-black uppercase border-2 border-black hover:brightness-110 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[6px] active:translate-y-[6px] transition-all flex items-center justify-center gap-2 text-lg disabled:opacity-50 disabled:grayscale"
+                  className="flex-1 bg-[#FFDE59] text-black px-6 py-4 font-black uppercase border-2 border-black hover:brightness-110 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1.5 active:translate-y-1.5 transition-all flex items-center justify-center gap-2 text-lg disabled:opacity-50 disabled:grayscale"
                 >
                   {loading ? (
                     <Loader2 className="h-5 w-5 animate-spin" />

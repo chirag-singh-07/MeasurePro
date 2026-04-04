@@ -8,57 +8,13 @@ import {
   ChartBar,
   ShieldCheck,
   Star,
-  Menu,
 } from "lucide-react";
+import { Navbar } from "@/components/navbar";
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white text-black font-sans selection:bg-black selection:text-white">
-      {/* Navigation - Neo-Brutalist */}
-      <header className="sticky top-0 z-50 w-full border-b-2 border-black bg-white">
-        <div className="w-full max-w-7xl mx-auto px-4 md:px-6 flex h-20 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="bg-black text-white p-2 border-2 border-black">
-              <Ruler className="h-6 w-6" />
-            </div>
-            <span className="text-2xl font-bold tracking-tight">
-              MeasurePro
-            </span>
-          </div>
-
-          <nav className="hidden md:flex gap-8 text-base font-bold items-center">
-            {["Features", "How it Works", "Testimonials", "Pricing"].map(
-              (item) => (
-                <Link
-                  key={item}
-                  href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="hover:underline underline-offset-4 decoration-2"
-                >
-                  {item}
-                </Link>
-              ),
-            )}
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <Link
-              href="/auth/signin"
-              className="text-base font-bold hover:underline hidden sm:block"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/auth/signup"
-              className="bg-black text-white px-6 py-2.5 font-bold border-2 border-black hover:bg-white hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px]"
-            >
-              Get Started
-            </Link>
-            <button className="md:hidden border-2 border-black p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px]">
-              <Menu className="h-6 w-6" />
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="flex-1 w-full">
         {/* Hero Section */}
@@ -286,7 +242,7 @@ export default function LandingPage() {
                     ))}
                   </div>
                   <p className="text-lg font-bold italic mb-6 leading-relaxed">
-                    "{t.quote}"
+                    &quot;{t.quote}&quot;
                   </p>
                   <div className="flex items-center gap-4 border-t-2 border-black pt-6">
                     <div className="h-10 w-10 bg-black text-white flex items-center justify-center font-bold border-2 border-black">

@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { authInstance } from "@/lib/auth";
 import connectDB from "@/lib/mongodb";
 import UserModel from "@/models/User";
 import { headers } from "next/headers";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Get the session from better-auth
     const session = await authInstance.api.getSession({
@@ -25,11 +25,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    const companyId = dbUser.companyId as { _id: unknown; name: string } | null;
     const enrichedUser = {
       ...session.user,
       role: dbUser.role as string,
-      companyId: (dbUser.companyId as any)?._id?.toString() ?? "",
-      companyName: (dbUser.companyId as any)?.name ?? "",
+      companyId: companyId?._id?.toString() ?? "",
+      companyName: companyId?.name ?? "",
     };
 
     return NextResponse.json({ user: enrichedUser });
