@@ -8,9 +8,10 @@ import mongoose from "mongoose";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -20,7 +21,7 @@ export async function GET(
     await connectDB();
 
     const project = await Project.findOne({
-      _id: params.id,
+      _id: id,
       companyId: session.user.companyId,
     }).lean();
 
@@ -29,7 +30,7 @@ export async function GET(
     }
 
     // Get sections with items
-    const sections = await Section.find({ projectId: params.id })
+    const sections = await Section.find({ projectId: id })
       .sort({ order: 1 })
       .lean();
 
@@ -68,9 +69,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -82,7 +84,7 @@ export async function PUT(
     await connectDB();
 
     const project = await Project.findOne({
-      _id: params.id,
+      _id: id,
       companyId: session.user.companyId,
     });
 
@@ -91,11 +93,11 @@ export async function PUT(
     }
 
     // Delete existing sections and items
-    const existingSections = await Section.find({ projectId: params.id });
+    const existingSections = await Section.find({ projectId: id });
     for (const section of existingSections) {
       await Item.deleteMany({ sectionId: section._id });
     }
-    await Section.deleteMany({ projectId: params.id });
+    await Section.deleteMany({ projectId: id });
 
     // Create new sections and items
     let projectTotal = 0;
@@ -103,7 +105,7 @@ export async function PUT(
     for (const sectionData of sections) {
       const section = await Section.create({
         title: sectionData.title,
-        projectId: params.id,
+        projectId: id,
         order: sectionData.order,
         totalAmount: sectionData.totalAmount,
       });
@@ -116,7 +118,7 @@ export async function PUT(
           size: itemData.size,
           qty: itemData.qty,
           rate: itemData.rate,
-          amount: itemData.amount,
+          amount: itemData.size * itemData.qty * itemData.rate,
           order: itemData.order,
         });
       }
@@ -148,9 +150,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user) {
@@ -160,7 +163,7 @@ export async function DELETE(
     await connectDB();
 
     const project = await Project.findOne({
-      _id: params.id,
+      _id: id,
       companyId: session.user.companyId,
     });
 
@@ -169,12 +172,12 @@ export async function DELETE(
     }
 
     // Delete all related data
-    const sections = await Section.find({ projectId: params.id });
+    const sections = await Section.find({ projectId: id });
     for (const section of sections) {
       await Item.deleteMany({ sectionId: section._id });
     }
-    await Section.deleteMany({ projectId: params.id });
-    await Project.findByIdAndDelete(params.id);
+    await Section.deleteMany({ projectId: id });
+    await Project.findByIdAndDelete(id);
 
     return NextResponse.json({ message: "Project deleted successfully" });
   } catch (error: any) {

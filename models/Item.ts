@@ -60,12 +60,6 @@ const ItemSchema = new Schema<IItem>(
   },
 );
 
-// Auto-calculate amount before saving
-ItemSchema.pre("save", function (next) {
-  this.amount = this.size * this.qty * this.rate;
-  next();
-});
-
 // Index for faster queries
 ItemSchema.index({ sectionId: 1, order: 1 });
 

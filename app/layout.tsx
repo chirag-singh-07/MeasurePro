@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { AuthProvider } from "@/components/auth-provider";
 import { ToastProvider } from "@/components/ui/toast-context";
 import "./globals.css";
 
@@ -21,7 +22,9 @@ export default function RootLayout({
       <body
         className={`${inter.className} antialiased min-h-screen bg-background text-foreground`}
       >
-        <ToastProvider>{children}</ToastProvider>
+        <AuthProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );

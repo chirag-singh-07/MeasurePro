@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 
@@ -47,5 +48,8 @@ async function connectDB() {
 
   return cached.conn;
 }
+
+// Export a MongoClient for better-auth
+export const client = new MongoClient(MONGODB_URI);
 
 export default connectDB;

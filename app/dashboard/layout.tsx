@@ -6,6 +6,10 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FolderKanban,
+  Users,
+  FileText,
+  LifeBuoy,
+  Briefcase,
   Settings,
   LogOut,
   Menu,
@@ -16,6 +20,10 @@ import { useState } from "react";
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Projects", href: "/projects", icon: FolderKanban },
+  { name: "Clients", href: "/clients", icon: Users },
+  { name: "Team", href: "/team", icon: Briefcase },
+  { name: "Reports", href: "/reports", icon: FileText },
+  { name: "Support", href: "/support", icon: LifeBuoy },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
