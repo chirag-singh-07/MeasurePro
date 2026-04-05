@@ -1,126 +1,57 @@
+import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 
 export default function PrivacyPolicyPage() {
   return (
     <>
+      <Navbar />
       <div className="min-h-screen bg-white">
         {/* Header */}
-        <div className="bg-black text-white py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl font-bold mb-4">Privacy Policy</h1>
-          <p className="text-xl">Last updated: April 5, 2026</p>
+        <div className="bg-black text-white py-20 border-b-4 border-black">
+          <div className="max-w-7xl mx-auto px-4 md:px-6">
+            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-4">Privacy Policy</h1>
+            <p className="text-xl md:text-2xl font-bold border-l-4 border-white pl-6">Protecting your project data is our priority.</p>
+          </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <div className="space-y-8">
-          {/* Introduction */}
-          <section className="border-2 border-black p-6">
-            <h2 className="text-2xl font-bold mb-4">Introduction</h2>
-            <p className="text-gray-700 leading-relaxed">
-              MeasurePro ("Company", "we", "us", or "our") operates the MeasurePro website and application (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.
-            </p>
-          </section>
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-20 pb-40">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div className="lg:col-span-8 space-y-12">
+              <section className="border-4 border-black p-8 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                <h2 className="text-3xl font-black uppercase mb-6">Information Collection</h2>
+                <p className="font-bold text-gray-800 leading-relaxed mb-6">
+                  We collect personal information that you voluntarily provide to us when you register on our Service, express an interest in obtaining information about us or our products, or when you participate in activities on the Service.
+                </p>
+                <div className="bg-[#f0f0f0] border-2 border-black p-6 font-bold">
+                  <p className="uppercase text-xs font-black mb-2 opacity-50">Collected Data Points:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li>Name and Contact Data</li>
+                    <li>Credentials and Account Info</li>
+                    <li>Project and Measurement Data</li>
+                    <li>Payment Information</li>
+                  </ul>
+                </div>
+              </section>
 
-          {/* Information Collection */}
-          <section className="border-2 border-black p-6">
-            <h2 className="text-2xl font-bold mb-4">Information Collection and Use</h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-bold mb-2">Types of Data Collected:</h3>
-                <ul className="list-disc list-inside space-y-2 text-gray-700">
-                  <li><strong>Personal Data:</strong> Email address, name, phone number, company information</li>
-                  <li><strong>Usage Data:</strong> Browser type, IP address, pages visited, time and date of visits</li>
-                  <li><strong>Project Data:</strong> Project details, client information, measurements, calculations</li>
-                  <li><strong>Cookies:</strong> Session management and user preferences</li>
-                </ul>
+              <section className="border-4 border-black p-8 bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                <h2 className="text-3xl font-black uppercase mb-6">How We Use Your Info</h2>
+                <p className="font-bold text-gray-800 leading-relaxed">
+                  We use personal information collected via our Service for a variety of business purposes described below. We process your personal information for these purposes in reliance on our legitimate business interests, in order to enter into or perform a contract with you, with your consent, and/or for compliance with our legal obligations.
+                </p>
+              </section>
+            </div>
+
+            <div className="lg:col-span-4 h-fit sticky top-32">
+              <div className="border-4 border-black p-8 bg-[#FFDE59] shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+                <h3 className="text-xl font-black uppercase mb-4">Last Updated</h3>
+                <p className="font-black text-3xl">APRIL 5, 2026</p>
               </div>
             </div>
-          </section>
-
-          {/* Use of Data */}
-          <section className="border-2 border-black p-6">
-            <h2 className="text-2xl font-bold mb-4">Use of Data</h2>
-            <p className="text-gray-700 mb-4">MeasurePro uses the collected data for various purposes:</p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 pl-4">
-              <li>To provide and maintain our Service</li>
-              <li>To notify you about changes to our Service</li>
-              <li>To allow you to participate in interactive features of our Service</li>
-              <li>To provide customer support</li>
-              <li>To gather analysis or valuable information so we can improve our Service</li>
-              <li>To monitor the usage of our Service</li>
-              <li>To detect, prevent and address technical and security issues</li>
-            </ul>
-          </section>
-
-          {/* Data Security */}
-          <section className="border-2 border-black p-6">
-            <h2 className="text-2xl font-bold mb-4">Security of Data</h2>
-            <p className="text-gray-700 leading-relaxed">
-              The security of your data is important to us, but remember that no method of transmission over the Internet or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.
-            </p>
-          </section>
-
-          {/* Cookie Policy */}
-          <section className="border-2 border-black p-6">
-            <h2 className="text-2xl font-bold mb-4">Cookies</h2>
-            <p className="text-gray-700 mb-4">
-              We use cookies and similar tracking technologies to track activity on our Service and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.
-            </p>
-            <p className="text-gray-700">
-              Types of cookies we use:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 pl-4 mt-2">
-              <li><strong>Functional Cookies:</strong> Help us remember your preferences</li>
-              <li><strong>Session Cookies:</strong> Keep you logged in to your account</li>
-              <li><strong>Analytics Cookies:</strong> Track how you use our Service</li>
-            </ul>
-          </section>
-
-          {/* Data Retention */}
-          <section className="border-2 border-black p-6">
-            <h2 className="text-2xl font-bold mb-4">Retention of Data</h2>
-            <p className="text-gray-700 leading-relaxed">
-              MeasurePro will retain your Personal Data only for as long as necessary for the purposes set out in this Privacy Policy. We will retain and use your Personal Data to the extent necessary to comply with our legal obligations.
-            </p>
-          </section>
-
-          {/* Third Party Services */}
-          <section className="border-2 border-black p-6">
-            <h2 className="text-2xl font-bold mb-4">Third-Party Service Providers</h2>
-            <p className="text-gray-700 mb-4">
-              We may employ third-party companies and individuals to facilitate our Service, to perform Service-related services or to assist us in analyzing how our Service is used.
-            </p>
-            <p className="text-gray-700">
-              These third parties have access to your Personal Data only to perform these tasks on our behalf and are obligated not to disclose or use it for any other purpose.
-            </p>
-          </section>
-
-          {/* Changes to Policy */}
-          <section className="border-2 border-black p-6">
-            <h2 className="text-2xl font-bold mb-4">Changes to This Privacy Policy</h2>
-            <p className="text-gray-700">
-              We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date at the top of this Privacy Policy.
-            </p>
-          </section>
-
-          {/* Contact */}
-          <section className="border-2 border-black p-6 bg-gray-50">
-            <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
-            <p className="text-gray-700 mb-4">
-              If you have any questions about this Privacy Policy, please contact us:
-            </p>
-            <ul className="space-y-2 text-gray-700">
-              <li><strong>Email:</strong> privacy@measurepro.com</li>
-              <li><strong>Website:</strong> www.measurepro.com</li>
-              <li><strong>Address:</strong> MeasurePro Headquarters, India</li>
-            </ul>
-          </section>
+          </div>
         </div>
       </div>
       <Footer />
-      </div>
     </>
   );
 }

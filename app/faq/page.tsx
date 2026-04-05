@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 
 interface FAQItem {
@@ -12,6 +13,7 @@ interface FAQItem {
 }
 
 const faqs: FAQItem[] = [
+  // ... (keep existing faqs data)
   {
     id: '1',
     category: 'General',
@@ -121,85 +123,67 @@ export default function FAQPage() {
 
   return (
     <>
+      <Navbar />
       <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-black text-white py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl font-bold mb-4">Frequently Asked Questions</h1>
-          <p className="text-xl">Find answers to common questions about MeasurePro</p>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Category Filter */}
-        <div className="mb-12">
-          <p className="font-bold mb-4">Filter by Category:</p>
-          <div className="flex flex-wrap gap-3">
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-2 font-bold border-2 border-black transition-colors ${
-                  selectedCategory === category
-                    ? 'bg-black text-white'
-                    : 'bg-white text-black hover:bg-gray-50'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
+        {/* Header */}
+        <div className="bg-black text-white py-20 border-b-4 border-black">
+          <div className="max-w-7xl mx-auto px-4 md:px-6">
+            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-4">FAQ</h1>
+            <p className="text-xl md:text-2xl font-bold border-l-4 border-white pl-6">Find answers to common questions about MeasurePro</p>
           </div>
         </div>
 
-        {/* FAQ Items */}
-        <div className="space-y-4">
-          {filteredFaqs.map(faq => (
-            <div key={faq.id} className="border-2 border-black">
-              <button
-                onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-              >
-                <div className="text-left">
-                  <p className="text-sm text-gray-600 font-bold uppercase">{faq.category}</p>
-                  <h3 className="text-lg font-bold text-black">{faq.question}</h3>
-                </div>
-                <ChevronDown
-                  size={24}
-                  className={`flex-shrink-0 ml-4 transition-transform ${
-                    expandedId === faq.id ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-
-              {expandedId === faq.id && (
-                <div className="px-6 py-4 bg-gray-50 border-t-2 border-black">
-                  <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
-                </div>
-              )}
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-20 pb-40">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            {/* Category Filter */}
+            <div className="lg:col-span-1 border-4 border-black p-8 bg-[#FFDE59] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-fit">
+              <p className="font-black uppercase text-sm mb-6 pb-2 border-b-2 border-black">Categories</p>
+              <div className="flex flex-col gap-3">
+                {categories.map(category => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`px-4 py-3 text-left font-black uppercase text-xs border-2 border-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] ${
+                      selectedCategory === category
+                        ? 'bg-black text-white'
+                        : 'bg-white text-black hover:bg-gray-100'
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* Still Need Help */}
-        <div className="mt-12 border-2 border-black p-8 bg-gray-50 text-center">
-          <h2 className="text-2xl font-bold mb-4">Still need help?</h2>
-          <p className="text-gray-700 mb-6">
-            Can't find the answer you're looking for? Our support team is here to help!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/contact-us"
-              className="px-8 py-3 bg-black text-white font-bold border-2 border-black hover:bg-white hover:text-black transition-colors"
-            >
-              Contact Support
-            </a>
-            <a
-              href="mailto:support@measurepro.com"
-              className="px-8 py-3 bg-white text-black font-bold border-2 border-black hover:bg-black hover:text-white transition-colors"
-            >
-              Email Us
-            </a>
+            {/* FAQ Items */}
+            <div className="lg:col-span-3 space-y-6">
+              {filteredFaqs.map(faq => (
+                <div key={faq.id} className="border-4 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                  <button
+                    onClick={() => setExpandedId(expandedId === faq.id ? null : faq.id)}
+                    className="w-full px-8 py-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="text-left">
+                      <p className="text-xs text-gray-500 font-black uppercase mb-1">{faq.category}</p>
+                      <h3 className="text-xl font-black text-black uppercase">{faq.question}</h3>
+                    </div>
+                    <ChevronDown
+                      size={28}
+                      className={`shrink-0 ml-4 transition-transform border-2 border-black p-1 bg-[#f0f0f0] ${
+                        expandedId === faq.id ? 'rotate-180 bg-[#FFDE59]' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {expandedId === faq.id && (
+                    <div className="px-8 py-8 bg-[#f0f0f0] border-t-4 border-black">
+                      <p className="text-black font-bold leading-relaxed text-lg border-l-4 border-black pl-6">{faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
