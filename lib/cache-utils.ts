@@ -265,7 +265,7 @@ export function getHealthReport(): {
       "Cache memory usage is high. Consider clearing cache or reducing TTL."
     );
   } else if (stats.memoryUsage.mb > 50) {
-    if (status !== "critical") status = "warning";
+    if (status === "healthy") status = "warning";
     recommendations.push(
       "Cache memory usage is increasing. Monitor and consider optimization."
     );

@@ -24,7 +24,7 @@ class MemoryCache {
     hits: 0,
     misses: 0,
   };
-  private cleanupInterval: NodeJS.Timer | null = null;
+  private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor(private defaultTTL: number = 60 * 1000) {
     // 60 seconds default TTL

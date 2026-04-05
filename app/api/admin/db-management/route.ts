@@ -69,9 +69,8 @@ export async function POST(request: NextRequest) {
       case "create-backup":
         const backupResult = await createBackup();
         return NextResponse.json({
-          success: backupResult.success,
-          action: "create-backup",
           ...backupResult,
+          action: "create-backup",
         });
 
       case "list-backups":
@@ -93,9 +92,8 @@ export async function POST(request: NextRequest) {
         }
         const restoreResult = await restoreBackup(backupPath);
         return NextResponse.json({
-          success: restoreResult.success,
-          action: "restore-backup",
           ...restoreResult,
+          action: "restore-backup",
         });
 
       case "delete-backup":
@@ -107,9 +105,8 @@ export async function POST(request: NextRequest) {
         }
         const deleteResult = deleteBackup(backupPath);
         return NextResponse.json({
-          success: deleteResult.success,
-          action: "delete-backup",
           ...deleteResult,
+          action: "delete-backup",
         });
 
       case "clear-cache":

@@ -38,6 +38,7 @@ export interface EnrichedUser {
   role: string;
   companyId: string;
   companyName: string;
+  subscriptionPlan: string;
 }
 
 export interface EnrichedSession {
@@ -75,6 +76,7 @@ export async function auth(): Promise<EnrichedSession | null> {
     // Manually fetch company to avoid populate schema issues
     let companyName = "";
     let companyId = "";
+    let subscriptionPlan = "Basic";
     
     if (dbUser.companyId) {
       try {
@@ -82,6 +84,7 @@ export async function auth(): Promise<EnrichedSession | null> {
         if (company) {
           companyName = company.name;
           companyId = company._id?.toString() || "";
+          subscriptionPlan = company.subscriptionPlan || "Basic";
         }
       } catch (err) {
         // Failed to fetch company
@@ -102,6 +105,7 @@ export async function auth(): Promise<EnrichedSession | null> {
         role: dbUser.role as string,
         companyId: companyId,
         companyName: companyName,
+        subscriptionPlan: subscriptionPlan,
       },
       session: {
         id: authToken,

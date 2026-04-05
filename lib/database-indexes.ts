@@ -7,7 +7,7 @@ import connectDB from "./mongodb";
 import Project from "@/models/Project";
 import SupportTicket from "@/models/SupportTicket";
 import UserModel from "@/models/User";
-import { type Document } from "mongoose";
+import mongoose, { type Document } from "mongoose";
 
 interface IndexInfo {
   collection: string;
@@ -302,7 +302,10 @@ export async function getCollectionStats(): Promise<
     for (const { name, model } of collections) {
       try {
         const count = await model.countDocuments();
-        const stats_obj = await model.collection.stats();
+        const collectionName = model.collection.name;
+        
+        // Use db.command as .stats() is removed in newer drivers
+        const stats_obj = await mongoose.connection.db!.command({ collStats: collectionName });
 
         stats[name] = {
           count,
