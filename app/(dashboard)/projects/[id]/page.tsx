@@ -12,8 +12,13 @@ import {
   GripVertical,
   Check,
   Calculator,
+  Upload,
+  FileSpreadsheet,
 } from "lucide-react";
 import { useToast } from "@/components/ui/toast-context";
+import * as XLSX from "xlsx";
+import { pdf } from "@react-pdf/renderer";
+import { ProjectPDF } from "@/components/project-pdf";
 
 interface Item {
   _id?: string;
@@ -69,6 +74,14 @@ export default function ProjectDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
+  const [billDate, setBillDate] = useState<string>(new Date().toISOString().split('T')[0]);
+
+  useEffect(() => {
+    if (project?.date) {
+      setBillDate(new Date(project.date).toISOString().split('T')[0]);
+    }
+  }, [project]);
 
   useEffect(() => {
     fetchProjectData();
@@ -171,6 +184,30 @@ export default function ProjectDetailsPage() {
     );
   };
 
+  const toggleItemSelection = (sectionIndex: number, itemIndex: number) => {
+    const key = `${sectionIndex}-${itemIndex}`;
+    setSelectedItems((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  const toggleAllItems = (sectionIndex: number) => {
+    const section = sections[sectionIndex];
+    const sectionKeys = section.items.map((_, i) => `${sectionIndex}-${i}`);
+    const someUnselected = sectionKeys.some((k) => !selectedItems[k]);
+
+    const newSelection = { ...selectedItems };
+    sectionKeys.forEach((k) => {
+      newSelection[k] = someUnselected;
+    });
+    setSelectedItems(newSelection);
+  };
+
+  const clearSelection = () => {
+    setSelectedItems({});
+  };
+
   const calculateGrandTotal = () => {
     return sections.reduce((sum, section) => sum + section.totalAmount, 0);
   };
@@ -182,6 +219,222 @@ export default function ProjectDetailsPage() {
 
   const calculateFinalTotal = () => {
     return calculateGrandTotal() + calculateGST();
+  };
+
+  const handleImportExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = new Uint8Array(event.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+
+        if (jsonData.length <= 1) {
+          toast({ title: "Import Error", description: "Excel file is empty or invalid.", type: "error" });
+          return;
+        }
+
+        const newSections = [...sections];
+        
+        jsonData.slice(1).forEach((row) => {
+          if (!row[1] && !row[0]) return; // Skip empty rows
+
+          const sectionTitle = (row[0] || "Imported Items").toString().toUpperCase();
+          const description = (row[1] || "").toString();
+          const uom = (row[2] || "Nos").toString();
+          const size = parseFloat(row[3]) || 1;
+          const qty = parseFloat(row[4]) || 1;
+          const rate = parseFloat(row[5]) || 0;
+          const amount = size * qty * rate;
+
+          if (!description) return;
+
+          let section = newSections.find(s => s.title === sectionTitle);
+          if (!section) {
+            section = {
+              title: sectionTitle,
+              items: [],
+              totalAmount: 0,
+              order: newSections.length
+            };
+            newSections.push(section);
+          }
+
+          section.items.push({
+            description,
+            uom: UOM_OPTIONS.includes(uom) ? uom : "Nos",
+            size,
+            qty,
+            rate,
+            amount,
+            order: section.items.length
+          });
+          
+          section.totalAmount += amount;
+        });
+
+        setSections(newSections);
+        toast({ 
+          title: "Import Successful", 
+          description: "Excel data has been imported into sections.", 
+          type: "success" 
+        });
+      } catch (err) {
+        toast({ title: "Import Failed", description: "Could not parse Excel file.", type: "error" });
+      }
+      // Reset input
+      e.target.value = "";
+    };
+    reader.onerror = () => {
+      toast({ title: "File Error", description: "Could not read the file.", type: "error" });
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  const downloadTemplate = () => {
+    const templateData = [
+      ["SECTION TITLE", "DESCRIPTION", "UNIT", "SIZE", "QTY", "RATE"],
+      ["DEMOLITION WORKS", "Dismantling of existing R.C.C structure", "Cum", 10.5, 1, 1250],
+      ["CIVIL WORKS", "M25 Grade Concrete for Footings", "Cum", 15.2, 1, 6500],
+      ["CIVIL WORKS", "TMT Reinforcement Steel", "Kg", 1200, 1, 68],
+      ["CIVIL WORKS", "9 inch Brick Masonry in CM 1:6", "Cum", 25.5, 1, 5800],
+      ["PLASTERING", "Interior wall plastering 12mm thick", "Sqm", 150, 1, 240],
+      ["PAINTING", "Applying two coats of emulsion paint", "Sqm", 150, 1, 120]
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(templateData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Import Template");
+    
+    // Auto-size columns for better readability
+    worksheet["!cols"] = [
+      { wch: 20 },
+      { wch: 45 },
+      { wch: 8 },
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 12 }
+    ];
+
+    XLSX.writeFile(workbook, "MeasurePro_Import_Template.xlsx");
+    toast({ 
+      title: "Template Ready", 
+      description: "Follow the sample format for successful import.", 
+      type: "success" 
+    });
+  };
+
+  const exportToPDF = async () => {
+    if (!project) return;
+
+    // Filter items if any are selected
+    const selectedKeys = Object.keys(selectedItems).filter(
+      (k) => selectedItems[k],
+    );
+
+    let sectionsToExport = sections;
+    if (selectedKeys.length > 0) {
+      sectionsToExport = sections
+        .map((section, sIdx) => {
+          const filteredItems = section.items.filter(
+            (_, iIdx) => selectedItems[`${sIdx}-${iIdx}`],
+          );
+          return {
+            ...section,
+            items: filteredItems,
+            totalAmount: filteredItems.reduce((sum, item) => sum + item.amount, 0),
+          };
+        })
+        .filter((s) => s.items.length > 0);
+    }
+
+    if (sectionsToExport.length === 0) {
+      toast({
+        title: "No Items Selected",
+        description: "Please select items to include in the bill.",
+        type: "error",
+      });
+      return;
+    }
+
+    toast({
+      title: "Preparing Billing PDF",
+      description: "Generating document...",
+      type: "info",
+    });
+
+    try {
+      const doc = (
+        <ProjectPDF
+          project={project}
+          sections={sectionsToExport}
+          billDate={billDate}
+        />
+      );
+
+      // Trigger automatic save to history
+      await saveBillToHistory(sectionsToExport);
+
+      const asBlob = await pdf(doc).toBlob();
+      const url = URL.createObjectURL(asBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      const dateStr = new Date(billDate).toISOString().split("T")[0];
+      link.download = `${project.name.replace(/\s+/g, "_")}_Bill_${dateStr}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Export & Save Complete",
+        description: "Bill saved to history and PDF downloaded.",
+        type: "success",
+      });
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "PDF Error",
+        description: "Failed to generate PDF.",
+        type: "error",
+      });
+    }
+  };
+
+  const saveBillToHistory = async (billedSections: Section[]) => {
+    if (!project) return;
+
+    const subtotal = billedSections.reduce((sum, s) => sum + s.totalAmount, 0);
+    const gstAmount = (subtotal * project.gstPercentage) / 100;
+    const totalAmount = subtotal + gstAmount;
+    const itemsCount = billedSections.reduce((sum, s) => sum + s.items.length, 0);
+
+    try {
+      const response = await fetch("/api/bills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId: project._id,
+          projectName: project.name,
+          clientName: project.clientName,
+          billDate: billDate,
+          sections: billedSections,
+          subtotal,
+          gstAmount,
+          totalAmount,
+          itemsCount,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error("Failed to auto-save bill");
+      }
+    } catch (err) {
+      console.error("Error auto-saving bill:", err);
+    }
   };
 
   const handleSave = async () => {
@@ -282,7 +535,25 @@ export default function ProjectDetailsPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={downloadTemplate}
+            className="flex items-center gap-2 bg-[#87CEEB] text-black px-4 py-4 font-black uppercase border-4 border-black hover:bg-white hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all text-xs"
+            title="Download Excel Import Template"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            Template
+          </button>
+          <label className="flex items-center gap-2 bg-[#98FB98] text-black px-6 py-4 font-black uppercase border-4 border-black hover:bg-white hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all cursor-pointer">
+            <Upload className="w-5 h-5" />
+            Import Excel
+            <input
+              type="file"
+              accept=".xlsx, .xls"
+              className="hidden"
+              onChange={handleImportExcel}
+            />
+          </label>
           <button
             onClick={handleSave}
             disabled={saving}
@@ -291,40 +562,63 @@ export default function ProjectDetailsPage() {
             <Save className="w-5 h-5" />
             {saving ? "Saving..." : "Save Changes"}
           </button>
-          <button className="flex items-center gap-2 bg-white px-8 py-4 font-black uppercase border-4 border-black hover:bg-black hover:text-white hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all">
+          <button
+            onClick={exportToPDF}
+            className="flex items-center gap-2 bg-white px-8 py-4 font-black uppercase border-4 border-black hover:bg-black hover:text-white hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all"
+          >
             <Download className="w-5 h-5" />
-            Export PDF
+            Export Bill PDF
           </button>
         </div>
       </div>
 
-      {/* Project Metadata Card */}
+      {/* Project Metadata & Selection Card */}
       <div className="bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="border-l-4 border-black pl-4">
           <p className="text-xs font-black uppercase text-gray-500 mb-1">
-            Location
+            Bill/Report Date
           </p>
-          <p className="font-bold text-lg">{project?.location || "N/A"}</p>
+          <input
+            type="date"
+            value={billDate}
+            onChange={(e) => setBillDate(e.target.value)}
+            className="font-bold text-lg bg-transparent border-b-2 border-black focus:outline-none"
+          />
         </div>
         <div className="border-l-4 border-black pl-4">
           <p className="text-xs font-black uppercase text-gray-500 mb-1">
-            Created Date
+            Selection Status
           </p>
-          <p className="font-bold text-lg">
-            {project?.date &&
-              new Date(project.date).toLocaleDateString("en-IN", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              })}
-          </p>
+          {Object.values(selectedItems).filter(Boolean).length > 0 ? (
+            <div className="flex items-center gap-2">
+              <span className="font-black text-blue-600 animate-pulse uppercase">
+                {Object.values(selectedItems).filter(Boolean).length} ITEMS SELECTED
+              </span>
+              <button
+                onClick={clearSelection}
+                className="text-[10px] font-black uppercase underline hover:text-red-500"
+              >
+                Clear
+              </button>
+            </div>
+          ) : (
+            <p className="font-bold text-gray-400 uppercase italic text-sm">Selective Billing Mode</p>
+          )}
         </div>
         <div className="border-l-4 border-black pl-4">
           <p className="text-xs font-black uppercase text-gray-500 mb-1">
-            Total Value
+            {Object.values(selectedItems).filter(Boolean).length > 0 ? "Billed Value" : "Project Value"}
           </p>
           <p className="font-black text-2xl">
-            ₹{project?.totalAmount.toLocaleString("en-IN")}
+            ₹
+            {Object.keys(selectedItems).filter(k => selectedItems[k]).length > 0 
+              ? sections.reduce((sum, s, sIdx) => 
+                  sum + s.items.reduce((iSum, item, iIdx) => 
+                    iSum + (selectedItems[`${sIdx}-${iIdx}`] ? item.amount : 0), 0
+                  ), 0
+                ).toLocaleString("en-IN")
+              : project?.totalAmount.toLocaleString("en-IN")
+            }
           </p>
         </div>
       </div>
@@ -353,9 +647,12 @@ export default function ProjectDetailsPage() {
                 />
               </div>
               <div className="flex items-center gap-2">
-                <div className="bg-black text-white px-3 py-1 font-black text-sm border-2 border-black">
-                  ITEMS: {section.items.length}
-                </div>
+                <button
+                  onClick={() => toggleAllItems(sectionIndex)}
+                  className="bg-blue-500 text-white px-3 py-1 font-black text-xs border-2 border-black hover:bg-black transition-colors"
+                >
+                  {section.items.every((_, i) => selectedItems[`${sectionIndex}-${i}`]) && section.items.length > 0 ? "DESELECT ALL" : "SELECT ALL"}
+                </button>
                 <button
                   onClick={() => removeSection(sectionIndex)}
                   className="bg-red-500 text-white p-2 border-2 border-black hover:bg-red-600 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
@@ -371,6 +668,9 @@ export default function ProjectDetailsPage() {
               <table className="w-full text-left border-collapse">
                 <thead className="bg-black text-white">
                   <tr>
+                    <th className="p-3 text-xs font-black uppercase tracking-wider w-12 text-center">
+                      <Check className="w-4 h-4 mx-auto" />
+                    </th>
                     <th className="p-3 text-xs font-black uppercase tracking-wider w-12 text-center">
                       #
                     </th>
@@ -402,8 +702,16 @@ export default function ProjectDetailsPage() {
                   {section.items.map((item, itemIndex) => (
                     <tr
                       key={itemIndex}
-                      className="hover:bg-yellow-50 group transition-colors"
+                      className={`group transition-colors ${selectedItems[`${sectionIndex}-${itemIndex}`] ? 'bg-blue-50/50 hover:bg-blue-100/50' : 'hover:bg-yellow-50'}`}
                     >
+                      <td className="p-3 text-center border-r-2 border-gray-100">
+                        <input
+                          type="checkbox"
+                          checked={!!selectedItems[`${sectionIndex}-${itemIndex}`]}
+                          onChange={() => toggleItemSelection(sectionIndex, itemIndex)}
+                          className="w-4 h-4 cursor-pointer accent-black"
+                        />
+                      </td>
                       <td className="p-3 text-center font-bold text-gray-500 border-r-2 border-gray-100">
                         {itemIndex + 1}
                       </td>
@@ -509,7 +817,7 @@ export default function ProjectDetailsPage() {
                   {section.items.length === 0 && (
                     <tr>
                       <td
-                        colSpan={9}
+                        colSpan={10}
                         className="p-8 text-center text-gray-400 font-bold italic"
                       >
                         No items in this section. Add one below.

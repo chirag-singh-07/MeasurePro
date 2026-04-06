@@ -1,0 +1,70 @@
+MEASUREPRO: SYSTEM OVERVIEW & MOBILE APP DESIGN SPECIFICATION
+===================================================================
+
+1. PLATFORM OVERVIEW
+-------------------------------------------------------------------
+MeasurePro is a robust, multi-tenant SaaS platform built for professional estimators, contractors, and agencies. It streamlines project management by allowing users to create detailed material and cost estimates using AI, generating highly professional, customizable PDF reports, tracking billing and invoices, and managing hierarchical company infrastructures. 
+
+The system is highly secure with rigorous RBAC (Role-Based Access Control) isolating data across different companies while allowing SuperAdmins total oversight.
+
+
+2. CORE MODULES & FEATURES
+-------------------------------------------------------------------
+* AI Estimation Engine: Users input raw project details, and the AI generates structured estimates, parsing them into specific items (materials, labor, overhead, profit margins).
+* PDF Generation Engine: Transforms JSON estimation data into perfectly structured, branded PDF documents directly in the browser/app.
+* Multi-tenant Dashboard: Workers see only their projects and bills. Admins manage the collective output of their company.
+* Billing & Invoicing: An automated accounting ledger linking generated estimates directly to billable invoices with real-time payment tracking.
+* Support Protocol: A built-in ticketing system allowing users to file incidents directly to SuperAdmins.
+* Admin Core (Command Node): A centralized hub for overseeing infrastructure load, security logs, ecosystem health, user management, and support protocols.
+
+
+3. ROLE-BASED ACCESS CONTROL (RBAC)
+-------------------------------------------------------------------
+The platform heavily relies on strict session segregation. The mobile app MUST respect these roles:
+* SUPER-ADMIN: Has god-mode access. Can view all companies, all users, global system health, global logs, and all support tickets.
+* ADMIN: A manager of a specific "Company Entity". Can only view projects, bills, users, and tickets belonging to their 'companyId'.
+* WORKER: A standard user belonging to an Admin's company. Can only view and create Projects/Bills assigned to them. Cannot access the Admin dashboard.
+
+
+4. NEO-BRUTALIST DESIGN SYSTEM (FOR MOBILE IMPLEMENTATION)
+-------------------------------------------------------------------
+This is the most critical aspect of the mobile app transition. MeasurePro stands out through a strict, high-contrast "Neo-Brutalist" design language. Do NOT use standard flat design, iOS material design, or soft iOS/Android blur shadows. 
+
+A. Core Color Palette:
+   - Primary Accent: Yellow/Gold (Hex: #FFDE59) - Used for primary actions, badges, highlights.
+   - Backgrounds: Solid White (#FFFFFF) and extremely light gray for secondary cards (#F9FAFB).
+   - Inverted Modes: Solid Black (#000000) with White (#FFFFFF) text for high-contrast banners and Admin terminals.
+   - Success/Positive: Emerald Green (#10B981)
+   - Alert/Destructive: Rose Red (#F43F5E)
+
+B. Typography:
+   - Font Family: Use a highly legible sans-serif font like Inter or Roboto.
+   - Styling Rules: Heavy use of "UPPERCASE", "font-black" (weight 900), tracking/letter-spacing. 
+   - Modifiers: Frequent use of "italic" text combined with heavy bolding to create motion and urgency.
+
+C. Borders & Shadows (The Neo-Brutalist Core):
+   - ALL interactive elements (Cards, Buttons, Inputs) MUST have a heavy, solid black border (width: 2px, color: #000000).
+   - Shadows are NEVER blurred. They are offset, solid color blocks:
+     * Standard Drop Shadow: offset X: 4px, offset Y: 4px, solid black, no blur radius.
+     * Deep Shadow: offset X: 8px, offset Y: 8px, solid black, no blur radius.
+     * Accent Shadow: Used on black backgrounds (offset X: 8px, offset Y: 8px, solid #FFDE59).
+
+D. UI Element Behaviors (Micro-interactions):
+   - Active/Pressed States: When a user taps a button or card, the drop-shadow should visually "disappear", and the element itself should shift downwards and to the right (translate X: +4px, Y: +4px) to create an authentic, physical mechanical pressing feel. 
+   - Angled Elements: System badges, icons, or headers are often slightly rotated (e.g., -2 degrees) to break up the rigid vertical grid.
+
+E. Example Mobile Implementations:
+   * Buttons: Square corners (NO border-radius or perfectly flat). 2px thick black border. Solid background (White, Black, or #FFDE59). Solid black drop shadow. Bold uppercase text.
+   * Input Fields: Square corners. 2px thick black border. White background. Focus state: background lightly tints yellow, and border remains thick black. No blurred rings.
+   * Bottom Sheets / Dialogs: Slide up violently with a hard 2px black border at the top and a massive solid black backdrop tint, rejecting standard transparent blurs.
+
+
+5. API INTEGRATION POINTS (BACKEND ROUTES)
+-------------------------------------------------------------------
+The mobile app should communicate using standard REST API wrappers around Next.js endpoints:
+- Authentication: Better-Auth via existing session tokens.
+- Projects: `/api/projects` 
+- Billing: `/api/bills` 
+- Users: `/api/admin/users` 
+- Support: `/api/admin/tickets`
+- Logs/Health: `/api/admin/logs`

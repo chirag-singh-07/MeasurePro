@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
         id: user._id.toString(),
         email: user.email,
         name: user.name,
+        role: user.role,
       },
     });
 

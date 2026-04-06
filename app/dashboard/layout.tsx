@@ -15,6 +15,8 @@ import {
   LogOut,
   Menu,
   X,
+  Receipt,
+  BarChart3,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Loading } from "@/components/loading";
@@ -22,9 +24,10 @@ import { Loading } from "@/components/loading";
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Projects", href: "/projects", icon: FolderKanban },
+  { name: "Billing History", href: "/bills", icon: Receipt },
   { name: "Clients", href: "/clients", icon: Users },
   { name: "Team", href: "/team", icon: Briefcase },
-  { name: "Reports", href: "/reports", icon: FileText },
+  { name: "Reports", href: "/reports", icon: BarChart3 },
   { name: "Support", href: "/support", icon: LifeBuoy },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
@@ -40,13 +43,17 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [enrichedUser, setEnrichedUser] = useState<any>(null);
 
-  // Redirect to signin if no session after loading
+  // Protect dashboard routes: Redirect based on session and role
   useEffect(() => {
-    // Only redirect if:
-    // 1. We're done loading (!isPending) AND
-    // 2. We explicitly have no session (session === null, not just falsy)
-    if (!isPending && session === null) {
-      router.push("/auth/signin");
+    if (!isPending) {
+      if (session === null) {
+        router.push("/auth/signin");
+      } else if (session?.user) {
+        // SuperAdmin and Admin MUST use the admin dashboard, and cannot access normal dashboard
+        if (session.user.role === "SuperAdmin" || session.user.role === "Admin") {
+          router.replace("/admin");
+        }
+      }
     }
   }, [session, isPending, router]);
 

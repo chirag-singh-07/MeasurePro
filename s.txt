@@ -1,8 +1,0 @@
-What would you like to work on next? Here are some options:
-
-Test the support feature - Get the dev server running and test creating/viewing tickets
-Add more features - Like clients page, reports page, team management, or settings
-Database improvements - Add indexes, optimize queries, or backup strategies
-Deployment setup - Configure for production deployment
-Something else - Let me know what you need!
-What should we focus on?

@@ -59,7 +59,11 @@ export function SignInForm() {
         description: "Redirecting to your dashboard...",
         type: "success",
       });
-      router.push("/dashboard");
+      const destination = (data.user.role === "SuperAdmin" || data.user.role === "Admin")
+        ? "/admin"
+        : "/dashboard";
+
+      router.push(destination);
       router.refresh();
     } catch (error) {
       console.error("Sign in error:", error);

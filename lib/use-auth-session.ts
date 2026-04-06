@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 
 export interface Session {
@@ -5,6 +7,7 @@ export interface Session {
     id: string;
     email: string;
     name: string;
+    role: string;
   };
   session: {
     token: string;
@@ -52,6 +55,7 @@ export function useAuthSession() {
                 id: data.user.id || "",
                 email: data.user.email || "",
                 name: data.user.name || "",
+                role: data.user.role || "Worker",
               },
               session: {
                 token: "authenticated",
